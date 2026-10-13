@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../core/constants/api_constants.dart';
 import '../../auth/cubit/auth_cubit.dart';
 import '../../auth/cubit/auth_state.dart';
 import '../../auth/presentation/login_screen.dart';
+import '../../backend_selection/presentation/backend_selection_screen.dart';
 import '../cubit/product_cubit.dart';
 import '../cubit/product_state.dart';
 import 'add_product_screen.dart';
 import 'widgets/product_card.dart';
+
 
 class HomeProductsScreen extends StatefulWidget {
   const HomeProductsScreen({super.key});
@@ -67,6 +70,69 @@ class _HomeProductsScreenState extends State<HomeProductsScreen> {
             style: TextStyle(fontWeight: FontWeight.bold),
           ),
           actions: [
+            InkWell(
+              onTap: () async {
+                final changed = await Navigator.push<bool>(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const BackendSelectionScreen(isInitialSetup: false),
+                  ),
+                );
+                if (changed == true && mounted) {
+                  setState(() {});
+                }
+              },
+              borderRadius: BorderRadius.circular(20),
+              child: Container(
+                margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                decoration: BoxDecoration(
+                  color: ApiConstants.activeBackend == BackendType.mongodb
+                      ? const Color(0xFF10B981).withValues(alpha: 0.15)
+                      : const Color(0xFF6366F1).withValues(alpha: 0.15),
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(
+                    color: ApiConstants.activeBackend == BackendType.mongodb
+                        ? const Color(0xFF10B981)
+                        : const Color(0xFF6366F1),
+                    width: 1,
+                  ),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      ApiConstants.activeBackend == BackendType.mongodb
+                          ? Icons.eco_rounded
+                          : Icons.bolt_rounded,
+                      size: 14,
+                      color: ApiConstants.activeBackend == BackendType.mongodb
+                          ? const Color(0xFF10B981)
+                          : const Color(0xFF6366F1),
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      ApiConstants.activeBackend.shortName,
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        color: ApiConstants.activeBackend == BackendType.mongodb
+                            ? const Color(0xFF10B981)
+                            : const Color(0xFF6366F1),
+                      ),
+                    ),
+                    const SizedBox(width: 2),
+                    Icon(
+                      Icons.arrow_drop_down,
+                      size: 16,
+                      color: ApiConstants.activeBackend == BackendType.mongodb
+                          ? const Color(0xFF10B981)
+                          : const Color(0xFF6366F1),
+                    ),
+                  ],
+                ),
+              ),
+            ),
             IconButton(
               icon: const Icon(Icons.refresh),
               tooltip: 'Refresh Products',
@@ -81,6 +147,7 @@ class _HomeProductsScreenState extends State<HomeProductsScreen> {
             ),
           ],
         ),
+
         floatingActionButton: FloatingActionButton.extended(
           onPressed: () async {
             await Navigator.push(

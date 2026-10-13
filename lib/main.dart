@@ -6,16 +6,29 @@ import 'features/auth/presentation/login_screen.dart';
 import 'features/products/cubit/product_cubit.dart';
 import 'features/products/presentation/home_products_screen.dart';
 
+import 'core/constants/api_constants.dart';
+import 'data/injector.dart';
+import 'features/backend_selection/presentation/backend_selection_screen.dart';
 import 'utils/helper/storage_helper.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await StorageHelper.init();
+
+  // Initialize backend from storage if previously selected
+  final savedBackend = StorageHelper().getSelectedBackend();
+  if (savedBackend != null) {
+    final customUrl = StorageHelper().getCustomBackendUrl(savedBackend);
+    ApiConstants.setBackend(savedBackend, customUrl: customUrl);
+    Injector.updateBaseUrl();
+  }
+
   runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
+
 
   @override
   Widget build(BuildContext context) {
@@ -72,11 +85,14 @@ class MyApp extends StatelessWidget {
           ),
         ),
         themeMode: ThemeMode.system,
-        home: const AuthGate(),
+        home: StorageHelper().hasSelectedBackend()
+            ? const AuthGate()
+            : const BackendSelectionScreen(isInitialSetup: true),
       ),
     );
   }
 }
+
 
 class AuthGate extends StatelessWidget {
   const AuthGate({super.key});

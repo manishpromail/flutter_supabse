@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../core/constants/api_constants.dart';
+import '../../backend_selection/presentation/backend_selection_screen.dart';
 import '../cubit/auth_cubit.dart';
 import '../cubit/auth_state.dart';
+
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -102,9 +105,75 @@ class _SignupScreenState extends State<SignupScreen> {
                             color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                           ),
                         ),
-                        const SizedBox(height: 24),
+                        const SizedBox(height: 16),
+
+                        // Interactive Backend Switcher Chip
+                        Center(
+                          child: InkWell(
+                            onTap: () async {
+                              await Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => const BackendSelectionScreen(isInitialSetup: false),
+                                ),
+                              );
+                              if (mounted) setState(() {});
+                            },
+                            borderRadius: BorderRadius.circular(20),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                              decoration: BoxDecoration(
+                                color: ApiConstants.activeBackend == BackendType.mongodb
+                                    ? const Color(0xFF10B981).withValues(alpha: 0.12)
+                                    : const Color(0xFF6366F1).withValues(alpha: 0.12),
+                                borderRadius: BorderRadius.circular(20),
+                                border: Border.all(
+                                  color: ApiConstants.activeBackend == BackendType.mongodb
+                                      ? const Color(0xFF10B981)
+                                      : const Color(0xFF6366F1),
+                                  width: 1.2,
+                                ),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(
+                                    ApiConstants.activeBackend == BackendType.mongodb
+                                        ? Icons.eco_rounded
+                                        : Icons.bolt_rounded,
+                                    size: 16,
+                                    color: ApiConstants.activeBackend == BackendType.mongodb
+                                        ? const Color(0xFF10B981)
+                                        : const Color(0xFF6366F1),
+                                  ),
+                                  const SizedBox(width: 6),
+                                  Text(
+                                    'Registering on: ${ApiConstants.activeBackend.displayName}',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.bold,
+                                      color: ApiConstants.activeBackend == BackendType.mongodb
+                                          ? const Color(0xFF10B981)
+                                          : const Color(0xFF6366F1),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Icon(
+                                    Icons.swap_horiz_rounded,
+                                    size: 16,
+                                    color: ApiConstants.activeBackend == BackendType.mongodb
+                                        ? const Color(0xFF10B981)
+                                        : const Color(0xFF6366F1),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 20),
 
                         // Name Field
+
                         TextFormField(
                           controller: _nameController,
                           decoration: InputDecoration(
